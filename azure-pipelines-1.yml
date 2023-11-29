@@ -1,16 +1,21 @@
 trigger:
 - main
 
-strategy:
-  matrix:
-    linux:
-      operatingSystem: 'ubuntu-latest'
-    mac: 
-      operatingSystem: 'macos-latest'
-
 pool:
   vmImage: $(operatingSystem)
 
-steps:
-- script: echo Running on $(operatingSystem)
-  displayName: 'Run a one-line script'
+stages:
+- stage: Build
+  jobs:
+  - job: BuildJob
+    steps:
+      - bash: echo 'Build the Job'
+- stage: QAJob
+  jobs:
+  - deployment: QAJobDeploy
+    environment: QAEnv
+    strategy:
+      runOnce:
+        deploy:
+         steps:
+           - bash: echo 'Build Job for QA'
